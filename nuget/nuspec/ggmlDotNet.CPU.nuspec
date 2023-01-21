@@ -9,25 +9,16 @@
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <license type="file">LICENSE.txt</license>
     <projectUrl>https://github.com/takuya-takeuchi/GgmlDotNet</projectUrl>
-    <icon>images\jpeg128.png</icon>
-    <description>Ggml wrapper library written in C++ and C# for Windows, MacOS and Linux</description>
+    <icon>images\nn128.png</icon>
+    <description>ggml wrapper library written in C++ and C# for Windows, MacOS and Linux</description>
     <releaseNotes></releaseNotes>
     <copyright>© Takuya Takeuchi 2021</copyright>
-    <tags>Ggml .net jpeg2000</tags>
+    <tags>ggml .net neural network</tags>
     <serviceable>true</serviceable>
-
-    <dependencies>
-      <group targetFramework="netstandard2.0">
-        <dependency id="System.Drawing.Common" version="5.0.2" />
-      </group>
-    </dependencies>
-    <frameworkAssemblies>
-      <frameworkAssembly assemblyName="System.Drawing" targetFramework="net461" />
-    </frameworkAssemblies>
   </metadata>
   
   <files>
-    <file src="..\jpeg128.png" target="images\" />
+    <file src="..\nn128.png" target="images\" />
     <file src="build\GgmlDotNet.Native.props" target="build\GgmlDotNet.props" />
     <!-- allows the 'GgmlDotNet' package to read runtimes\** folder -->
     <file src="build\GgmlDotNet.targets" target="build\GgmlDotNet.targets" />
@@ -46,7 +37,7 @@
 
     <!-- license -->
     <file src="..\..\LICENSE.txt" target="" />
-    <file src="..\..\licenses\Ggml" target="licenses\Ggml" />
+    <file src="..\..\licenses\ggml" target="licenses\ggml" />
   </files>
 
 </package>

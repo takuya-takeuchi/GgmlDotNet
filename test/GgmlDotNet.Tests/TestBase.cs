@@ -10,7 +10,7 @@ namespace GgmlDotNet.Tests
 
         #region Methods
 
-        public void DisposeAndCheckDisposedState(GgmlObject obj)
+        public void DisposeAndCheckDisposedState(GgmlNativeObject obj)
         {
             if (obj == null)
                 return;
@@ -20,7 +20,7 @@ namespace GgmlDotNet.Tests
             Assert.True(obj.NativePtr == IntPtr.Zero);
         }
 
-        public void DisposeAndCheckDisposedStates(IEnumerable<GgmlObject> objs)
+        public void DisposeAndCheckDisposedStates(IEnumerable<GgmlNativeObject> objs)
         {
             foreach (var obj in objs)
                 this.DisposeAndCheckDisposedState(obj);

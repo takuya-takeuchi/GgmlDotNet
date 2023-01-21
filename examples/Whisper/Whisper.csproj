@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\GgmlDotNet\GgmlDotNet.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="DrWavDotNet" Version="0.13.7.20230108" />
+  </ItemGroup>
+
+</Project>

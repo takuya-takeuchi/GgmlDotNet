@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0.0)
+cmake_minimum_required(VERSION 3.13.0)
 cmake_policy(SET CMP0053 NEW)
 cmake_policy(SET CMP0054 NEW)
 
@@ -6,8 +6,7 @@ set(PROJ_NAME GgmlDotNetNative)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# It means that CMakeLists.txt version rather than library version
-project(${PROJ_NAME} VERSION 1.0.0)
+project(${PROJ_NAME} VERSION 1.0.0.0)
 
 # OS info
 message("-------------------------------------------------------")
@@ -24,15 +23,24 @@ message("-- Binaries: ${CMAKE_CURRENT_BINARY_DIR}")
 message("-------------------------------------------------------")
 
 # Version info
-set(VERSION_MAJOR 2)
-set(VERSION_MINOR 4)
+set(VERSION_MAJOR 1)
+set(VERSION_MINOR 0)
 set(VERSION_PATCH 0)
-set(VERSION_DATE 20210417)
+set(VERSION_DATE 0)
+
+# Binary is not be able to be executed in host, set 0 (success) forcibly
+set(THREADS_PTHREAD_ARG "0" CACHE STRING "Forcibly set by CMakeLists.txt." FORCE)
 
 # Only GCC requires -fPIC
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-	set(CMAKE_C_FLAGS "-fPIC")
-	set(CMAKE_CXX_FLAGS "-fPIC")
+	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
+endif()
+
+if ("${CMAKE_SYSTEM_NAME}" STREQUAL "Android")
+	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")
+    # use rtti to use dynamic_cast
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
 endif()
 
 # set architecture
@@ -52,6 +60,23 @@ if (NOT CMAKE_BUILD_TYPE)
     message("-- CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
 endif()
 
+# get root directory path
+get_filename_component(GGMLDOTNET_ROOT_DIR "../.." ABSOLUTE)
+
+if (MSVC OR MSYS OR MINGW)
+    include_directories("${ggml_SRC_DIR}/include")
+elseif("${CMAKE_SYSTEM_NAME}" STREQUAL "iOS")
+    include_directories("${ggml_SRC_DIR}/include")
+elseif(APPLE)
+    include_directories("${ggml_SRC_DIR}/include")
+elseif("${CMAKE_SYSTEM_NAME}" STREQUAL "Android")
+    include_directories("${ggml_SRC_DIR}/include")
+elseif(UNIX AND NOT APPLE)
+    include_directories("${ggml_SRC_DIR}/include")
+else()
+    message(FATAL_ERROR "Failed to include directories")
+endif()
+
 # Set /bigobj for MSVC
 if (${CMAKE_GENERATOR} MATCHES "Visual Studio")
 	# C4819: The file contains a character that cannot be represented in the current code page
@@ -69,55 +94,69 @@ if (${CMAKE_GENERATOR} MATCHES "Visual Studio")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
 endif()
 
-# ggml project submodule
-find_package (ggml REQUIRED)
-
 # create config file
-configure_file(
-    ${PROJECT_SOURCE_DIR}/src/config.hpp.in
-    ${PROJECT_SOURCE_DIR}/src/config.hpp
-    @ONLY)
+configure_file(${PROJECT_SOURCE_DIR}/ggml/config.hpp.in
+               ${PROJECT_SOURCE_DIR}/ggml/config.hpp
+               @ONLY)
 
-configure_file(
-    ${CMAKE_CURRENT_SOURCE_DIR}/version.rc.in
-    ${CMAKE_CURRENT_BINARY_DIR}/version.rc
-    @ONLY)
+FILE(GLOB_RECURSE HEADERS ${PROJECT_SOURCE_DIR}/ggml/*.hpp)
+FILE(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/ggml/*.cpp)
 
-FILE(GLOB_RECURSE HEADERS ${PROJECT_SOURCE_DIR}/src/*.h)
-FILE(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/src/*.cpp)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/version.rc.in
+               ${CMAKE_CURRENT_BINARY_DIR}/version.rc
+               @ONLY)
 
-OPTION(ENABLE_NEON "Enable ARM NEON" OFF)
-if (${ENABLE_NEON})
-        # ARM64 ignore mfpu option
-        # https://developer.arm.com/docs/dui0774/i/compiler-command-line-options/-mfpu
-	#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -mfpu=neon -fprofile-use -D ENABLE_NEON")
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -fprofile-use -D ENABLE_NEON")
+# STATIC_LIBRARIES
+if (MSVC OR MSYS OR MINGW)
+    if("${CMAKE_SYSTEM_NAME}" STREQUAL "WindowsStore")
+        set(STATIC_LIBRARIES
+            ${ggml_DIR}/lib/static/ggml.lib
+        )
+    else()
+        set(STATIC_LIBRARIES
+            ${ggml_DIR}/lib/static/ggml.lib
+        )
+    endif()
+elseif("${CMAKE_SYSTEM_NAME}" STREQUAL "iOS")
+    set(STATIC_LIBRARIES
+        ${ggml_DIR}/lib/static/libggml.a
+        "-framework Accelerate"
+    )
+elseif(APPLE)
+    set(STATIC_LIBRARIES
+        ${ggml_DIR}/lib/static/libggml.a
+        "-framework Accelerate"
+    )
+elseif("${CMAKE_SYSTEM_NAME}" STREQUAL "Android")
+    set(STATIC_LIBRARIES
+        ${ggml_DIR}/lib/static/libggml.a
+        z
+        log
+        android
+    )
+elseif(UNIX AND NOT APPLE)
+    # centos7 uses glibc-2.17-292.el7.x86_64 but build dev uses latest GCC
+    # Therefore, link libmvec as static
+    # https://sourceware.org/glibc/wiki/libmvec
+    # But it is not linked. why?
+    set(STATIC_LIBRARIES
+        ${ggml_DIR}/lib/static/libggml.a
+        pthread
+        gcc_s
+        gcc
+    )
+else()
+    message(FATAL_ERROR "Failed to link library")
 endif()
 
 if ("${CMAKE_SYSTEM_NAME}" STREQUAL "iOS")
     add_library(${PROJ_NAME} ${HEADERS}
                              ${SOURCES}
                              ${CMAKE_CURRENT_BINARY_DIR}/version.rc)
-else()
+else ()
     add_library(${PROJ_NAME} SHARED ${HEADERS}
                                     ${SOURCES}
                                     ${CMAKE_CURRENT_BINARY_DIR}/version.rc)
-endif()
-
-include_directories("$ENV{ggml_DIR}/include")
-
-if (MSVC OR MSYS OR MINGW)
-    list(APPEND STATIC_LIBRARIES
-        $ENV{ggml_DIR}/lib/ggml.lib
-    )
-elseif(APPLE)
-    list(APPEND STATIC_LIBRARIES
-        $ENV{ggml_DIR}/lib/libggml.a
-    )
-elseif(UNIX AND NOT APPLE)
-    list(APPEND STATIC_LIBRARIES
-        $ENV{ggml_DIR}/lib/libggml.a
-    )
 endif()
 
 target_link_libraries(${PROJ_NAME} ${STATIC_LIBRARIES})
@@ -129,6 +168,22 @@ set(CompilerFlags
     CMAKE_C_FLAGS
     CMAKE_C_FLAGS_DEBUG
     CMAKE_C_FLAGS_RELEASE
+)
+
+# install
+target_include_directories(${PROJ_NAME} INTERFACE
+                           $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+                           $<INSTALL_INTERFACE:include>)
+install(TARGETS ${PROJ_NAME}
+        EXPORT ${PROJ_NAME}Config
+        LIBRARY DESTINATION lib
+)
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/ggml/
+        DESTINATION include/ggmldotnet
+)
+install(EXPORT ${PROJ_NAME}Config
+        NAMESPACE ${PROJ_NAME}::
+        DESTINATION lib/cmake/ggmldotnet
 )
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})

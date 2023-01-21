@@ -1,0 +1,1 @@
+docker run --rm --privileged --entrypoint="/bin/bash" -v "/home/t-takeuchi/Work/OpenSource/GgmlDotNet:/opt/data/GgmlDotNet" -e LOCAL_UID=1000 -e LOCAL_GID=1000 -w "/opt/data/GgmlDotNet" -it ggmldotnet/build/ubuntu/16/android/28.0.3-r20-jdk8

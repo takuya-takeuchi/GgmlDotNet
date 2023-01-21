@@ -1,21 +1,15 @@
-# ![Alt text](nuget/quantum48.png "GgmlDotNet") GgmlDotNet [![GitHub license](https://img.shields.io/github/license/mashape/apistatus.svg)]()
+![GgmlDotNet](https://socialify.git.ci/takuya-takeuchi/GgmlDotNet/image?description=1&font=Raleway&language=1&logo=https%3A%2F%2Fgithub.com%2Ftakuya-takeuchi%2FGgmlDotNet%2Fraw%2Fmain%2Fnuget%2Fnn128.png&owner=1&pattern=Circuit%20Board&theme=Light)
 
-Ggml wrapper written in C++ and C# for Windows, MacOS and Linux
+[![GitHub Stars](https://img.shields.io/github/stars/takuya-takeuchi/ggmldotnet?label=STARS&color=%23DFB317&style=for-the-badge)]() [![GitHub Forks](https://img.shields.io/github/forks/takuya-takeuchi/ggmldotnet?label=FORKS&color=%236ECA00&style=for-the-badge)]() [![GitHub Issues](https://img.shields.io/github/issues/takuya-takeuchi/ggmldotnet?label=ISSUES&color=%23007EC6&style=for-the-badge)]() [![GitHub Lisence](https://img.shields.io/github/license/takuya-takeuchi/ggmldotnet?label=LISENCE&color=%239109BD&style=for-the-badge)]()
 
-#### GgmlDotNet
-
-|Package|OS|x86|x64|ARM|ARM64|Nuget|
-|---|---|---|---|---|---|---|
-|GgmlDotNet (CPU)|Windows|✓|✓|-|-|[![NuGet version](https://img.shields.io/nuget/v/GgmlDotNet.svg)](https://www.nuget.org/packages/GgmlDotNet)|
-||Linux|-|✓|-|-|[![NuGet version](https://img.shields.io/nuget/v/GgmlDotNet.svg)](https://www.nuget.org/packages/GgmlDotNet)|
-||OSX|-|✓|-|-|[![NuGet version](https://img.shields.io/nuget/v/GgmlDotNet.svg)](https://www.nuget.org/packages/GgmlDotNet)|
+WIP
  
 ## Dependencies Libraries and Products
 
-#### [Ggml](https://github.com/OpenJij/OpenJij)
+#### [Ggml](https://github.com/ggerganov/ggml)
 
-> **License:** Apache-2.0 License
+> **License:** MIT License
 >
-> **Author:** Ggml
+> **Author:** Georgi Gerganov
 > 
-> **Principal Use:** Framework for the Ising model and QUBO. Main goal of GgmlDotNet is what wraps Ggml by C#.
+> **Principal Use:** Tensor library for machine learning. Main goal of GgmlDotNet is what wraps Ggml by C#.
